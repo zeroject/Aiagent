@@ -16,4 +16,6 @@ code_executor_agent = ConversableAgent(
     human_input_mode="ALWAYS",
 )
 
+reply = code_executor_agent.generate_reply(messages=[{"role": "user", "content": "PUT MSG HERE"}])
+print(reply)
 temp_dir.cleanup()
