@@ -1,3 +1,4 @@
+import sys
 from autogen import AssistantAgent
 from autogen import UserProxyAgent
 
@@ -29,6 +30,6 @@ userProxy = UserProxyAgent(
 
 reply = userProxy.initiate_chat(
     assistant,
-    message="""Plot a chart of random numbers in a weekly setting save it as a png named random_numbers.png.""",
+    message="""{}""".format(sys.argv[1]),
     summary_method="reflection_with_llm"
 )
