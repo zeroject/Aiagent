@@ -1,21 +1,34 @@
-import tempfile
-from autogen import ConversableAgent
-from autogen.coding import LocalCommandLineCodeExecutor
+from autogen import AssistantAgent
+from autogen import UserProxyAgent
 
-temp_dir = tempfile.TemporaryDirectory()
+config_list = [
+    {
+        "model": "llama3.2",
+        "base_url": "http://localhost:11434/v1",
+        "api_key": "ollama"
+    }
+]
 
-executor = LocalCommandLineCodeExecutor(
-    timeout=10,
-    work_dir=temp_dir.name,
+assistant = AssistantAgent(
+    name="assistant",
+    llm_config={
+        "config_list": config_list,
+        "seed": 42,
+        "temperature": 0,
+    },
+    system_message="PROPOSE ALL SOLUTIONS WITH PYTHON CODE"
 )
 
-code_executor_agent = ConversableAgent(
-    "name",
-    llm_config=False,
-    code_execution_config={"executor": executor},
-    human_input_mode="ALWAYS",
+userProxy = UserProxyAgent(
+    name="proxy",
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=10,
+    is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
+    code_execution_config={"work_dir": "code", "use_docker": False},
 )
 
-reply = code_executor_agent.generate_reply(messages=[{"role": "user", "content": "PUT MSG HERE"}])
-print(reply)
-temp_dir.cleanup()
+reply = userProxy.initiate_chat(
+    assistant,
+    message="""Plot a chart of random numbers in a weekly setting save it as a png named random_numbers.png.""",
+    summary_method="reflection_with_llm"
+)
