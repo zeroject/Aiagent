@@ -14,15 +14,14 @@ assistant = AssistantAgent(
     name="assistant",
     llm_config={
         "config_list": config_list,
-        "seed": 42,
         "temperature": 0,
     },
-    system_message="PROPOSE ALL SOLUTIONS WITH PYTHON CODE"
+    system_message="YOU ARE A CODING ASSITENT HELPING WITH PROBLEMS. COME WITH PYTHON SOLUTIONS TO THE PROBLEMS. IF YOU WANT THE USER TO SAVE THE CODE IN A FILE BEFORE EXECUTING IT, PUT # filename: <filename> inside the code block as the first line. DONT INCLUDE MUTIPLE CODE BLOCKS IN ONE RESPONSE. WHEN EVERYTHING IS DONE AND THE RESULT IS CORRECT REPLY WITH 'TERMINATE'"
 )
 
 userProxy = UserProxyAgent(
     name="proxy",
-    human_input_mode="TERMINATE",
+    human_input_mode="NEVER",
     max_consecutive_auto_reply=10,
     is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
     code_execution_config={"work_dir": "code", "use_docker": False},
